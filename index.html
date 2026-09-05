@@ -163,6 +163,9 @@ h1,h2,h3{font-weight:400; letter-spacing:-0.02em; margin:0;}
 @media (min-width:640px){
   .content{padding:var(--sp-xl); padding-bottom:var(--sp-xxl);}
 }
+@media (max-width:639px){
+  .panel,.result-dark{padding:var(--sp-lg);}
+}
 
 .view{display:none;}
 .view.active{display:block; animation:fadein .2s ease;}
@@ -390,6 +393,12 @@ input[type="range"]{
 .note.ok{background:#e7f7ef; border-color:#c7ecd8; color:#0a6b3f;}
 .note.warn{background:#fdeeea; border-color:#f6d3c8; color:#8f3016;}
 .note strong{color:inherit;}
+.note.note-on-dark{background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.12); color:var(--on-dark-soft);}
+
+.result-divider{height:1px; background:rgba(255,255,255,0.1); margin:var(--sp-lg) 0 var(--sp-xs);}
+.result-dark .ledger-row.total{border-bottom:none; padding-top:var(--sp-sm);}
+.result-dark .ledger-row.total .label{color:var(--on-dark); font-weight:600;}
+.result-dark .ledger-row.total .value{color:#fff; font-size:17px;}
 
 /* Light ledger card (net value) */
 .ledger-light .ledger-row{border-bottom:1px dashed var(--hairline);}
@@ -682,25 +691,23 @@ input[type="range"]{
               <div class="bar-fill cbs" id="barCbs" style="width:50%;"></div>
               <div class="bar-fill ibs" id="barIbs" style="width:50%;"></div>
             </div>
-          </div>
 
-          <div class="panel" style="margin-top:var(--sp-lg);">
-            <p class="panel-title">Valor líquido estimado</p>
-            <div class="ledger-light">
-              <div class="ledger-row">
-                <span class="label">Valor da operação</span>
-                <span class="value mono" id="valBase">R$ 0,00</span>
-              </div>
-              <div class="ledger-row">
-                <span class="label">IBS + CBS destacados</span>
-                <span class="value mono" id="valTotal2">R$ 0,00</span>
-              </div>
-              <div class="ledger-row total">
-                <span class="label">Alíquota efetiva</span>
-                <span class="value mono" id="valAliquota">0,0%</span>
-              </div>
+            <div class="result-divider"></div>
+
+            <div class="ledger-row">
+              <span class="label">Valor da operação</span>
+              <span class="value mono" id="valBase">R$ 0,00</span>
             </div>
-            <div class="note" id="phaseExplain"></div>
+            <div class="ledger-row" id="valTotal2Row" style="display:none;">
+              <span class="label">IBS + CBS destacados</span>
+              <span class="value mono" id="valTotal2">R$ 0,00</span>
+            </div>
+            <div class="ledger-row total">
+              <span class="label">Alíquota efetiva</span>
+              <span class="value mono" id="valAliquota">0,0%</span>
+            </div>
+
+            <div class="note note-on-dark" id="phaseExplain"></div>
           </div>
         </div>
       </div>
