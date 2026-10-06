@@ -642,6 +642,40 @@ input[type="range"]{
             </div>
 
             <div class="field">
+              <label for="estado">Estado (para o ICMS do sistema atual)</label>
+              <select id="estado">
+                <option value="AC">Acre — 19%</option>
+                <option value="AL">Alagoas — 20,5%</option>
+                <option value="AM">Amazonas — 20%</option>
+                <option value="AP">Amapá — 18%</option>
+                <option value="BA">Bahia — 20,5%</option>
+                <option value="CE">Ceará — 20%</option>
+                <option value="DF">Distrito Federal — 20%</option>
+                <option value="ES">Espírito Santo — 17%</option>
+                <option value="GO">Goiás — 19%</option>
+                <option value="MA">Maranhão — 23%</option>
+                <option value="MG">Minas Gerais — 18%</option>
+                <option value="MS">Mato Grosso do Sul — 17%</option>
+                <option value="MT">Mato Grosso — 17%</option>
+                <option value="PA">Pará — 19%</option>
+                <option value="PB">Paraíba — 20%</option>
+                <option value="PE">Pernambuco — 20,5%</option>
+                <option value="PI">Piauí — 22,5%</option>
+                <option value="PR">Paraná — 19,5%</option>
+                <option value="RJ">Rio de Janeiro — 22%</option>
+                <option value="RN">Rio Grande do Norte — 20%</option>
+                <option value="RO">Rondônia — 19,5%</option>
+                <option value="RR">Roraima — 20%</option>
+                <option value="RS">Rio Grande do Sul — 17%</option>
+                <option value="SC">Santa Catarina — 17%</option>
+                <option value="SP" selected>São Paulo — 18%</option>
+                <option value="SE">Sergipe — 19%</option>
+                <option value="TO">Tocantins — 20%</option>
+              </select>
+              <div class="hint">Alíquota interna geral do ICMS no seu estado, usada só na seção "Sistema atual, em extinção". Não afeta CBS/IBS, que são nacionais. No Rio de Janeiro já inclui o adicional de 2% do FECP.</div>
+            </div>
+
+            <div class="field">
               <label>Ano de referência</label>
               <div class="year-scroll" id="yearScroll"></div>
             </div>
@@ -719,7 +753,7 @@ input[type="range"]{
               <span class="label"><span class="swatch" style="background:#ff6b57;"></span>PIS + COFINS, federal</span>
               <span class="value" id="valPisCofins">R$ 0,00 <span class="rate" id="ratePisCofins">0,0%</span></span>
             </div>
-            <div class="note note-on-dark" id="legacyNote" style="font-size:11.5px;">ICMS considerado na alíquota padrão de 18% (referência SP/MG/AP), só para exemplo didático — cada estado define a própria alíquota (hoje entre 17% e 22%).</div>
+            <div class="note note-on-dark" id="legacyNote" style="font-size:11.5px;"></div>
           </div>
         </div>
       </div>
@@ -848,12 +882,12 @@ input[type="range"]{
       <div class="panel">
         <p class="panel-title">Perguntas frequentes</p>
         <div class="faq-item"><div class="faq-q">As alíquotas de 2029 em diante já estão definidas?</div><p class="faq-a">Ainda não por completo. Esta calculadora usa a faixa oficial estimada e será atualizada conforme o Senado define os valores finais.</p></div>
-        <div class="faq-item"><div class="faq-q">Serve para qualquer estado ou município?</div><p class="faq-a">Sim. IBS e CBS seguem regra nacional, sem tabela separada por cidade ou estado.</p></div>
+        <div class="faq-item"><div class="faq-q">Serve para qualquer estado ou município?</div><p class="faq-a">Para IBS e CBS, sim — seguem regra nacional, sem tabela separada por cidade ou estado. Já o ICMS do sistema atual varia por estado, por isso você escolhe o seu na calculadora; o ISS municipal não entra na simulação por variar por cidade.</p></div>
         <div class="faq-item"><div class="faq-q">O cálculo substitui um contador?</div><p class="faq-a">Não. Esta é uma simulação educativa e não substitui orientação de contador ou advogado tributarista.</p></div>
       </div>
 
       <div class="footer-note">
-        Simulação educativa baseada na Emenda Constitucional 132/2023, na Lei Complementar 214/2025 e nas alíquotas de teste e de transição divulgadas pela Secretaria Extraordinária da Reforma Tributária. ICMS considerado a 18% (alíquota padrão de SP/MG/AP, só como referência didática — cada estado fixa a própria alíquota, hoje entre 17% e 22%). PIS (1,65%) e Cofins (7,6%) consideradas pelo regime não cumulativo e extintas a partir de 2027, quando são substituídas pela CBS. As alíquotas de 2029 a 2033 ainda dependem de fixação pelo Senado Federal e podem mudar.
+        Simulação educativa baseada na Emenda Constitucional 132/2023, na Lei Complementar 214/2025 e nas alíquotas de teste e de transição divulgadas pela Secretaria Extraordinária da Reforma Tributária. ICMS calculado pela alíquota interna geral do estado selecionado (17% a 23%, conforme legislação estadual vigente) — alíquotas específicas por produto, substituição tributária e benefícios fiscais não entram nesta simulação. PIS (1,65%) e Cofins (7,6%) consideradas pelo regime não cumulativo e extintas a partir de 2027, quando são substituídas pela CBS. As alíquotas de 2029 a 2033 ainda dependem de fixação pelo Senado Federal e podem mudar.
       </div>
     </div>
 
@@ -936,6 +970,7 @@ refInput.addEventListener('input', ()=>{
 });
 document.getElementById('valor').addEventListener('input', calc);
 document.getElementById('categoria').addEventListener('change', calc);
+document.getElementById('estado').addEventListener('change', calc);
 document.getElementById('simples').addEventListener('change', ()=>{
   document.getElementById('simplesNote').style.display = document.getElementById('simples').checked ? 'block' : 'none';
   calc();
@@ -943,18 +978,23 @@ document.getElementById('simples').addEventListener('change', ()=>{
 
 /* Tributos do sistema atual, ainda em vigor durante a transição (LC 214/2025).
    PIS e Cofins são extintos a partir de 2027, substituídos pela CBS cheia.
-   ICMS segue integral até 2028 e entra na mesma rampa de queda do IBS entre 2029 e 2032. */
-const ICMS_FULL = 18;
+   ICMS segue integral até 2028 e entra na mesma rampa de queda do IBS entre 2029 e 2032.
+   Alíquota interna geral por estado (inclui FECP quando obrigatório, caso do RJ). */
+const ICMS_RATES = {
+  AC:19, AL:20.5, AM:20, AP:18, BA:20.5, CE:20, DF:20, ES:17, GO:19, MA:23,
+  MG:18, MS:17, MT:17, PA:19, PB:20, PE:20.5, PI:22.5, PR:19.5, RJ:22, RN:20,
+  RO:19.5, RR:20, RS:17, SC:17, SP:18, SE:19, TO:20
+};
 const PIS_FULL = 1.65;
 const COFINS_FULL = 7.6;
 
-function legacyData(year){
+function legacyData(year, icmsFull){
   let icmsRate;
   if(year <= 2028){
-    icmsRate = ICMS_FULL;
+    icmsRate = icmsFull;
   } else if(year <= 2032){
     const progress = (year - 2028) / 5;
-    icmsRate = ICMS_FULL * (1 - progress);
+    icmsRate = icmsFull * (1 - progress);
   } else {
     icmsRate = 0;
   }
@@ -996,7 +1036,7 @@ const phaseExplainText = {
   2033: 'ICMS, ISS, PIS e Cofins saem de circulação. Só restam IBS e CBS, na alíquota de referência fixada pelo Senado.'
 };
 
-function computeForYear(year, valor, catMult, refTotal){
+function computeForYear(year, valor, catMult, refTotal, icmsFull){
   const phase = phaseData(year, refTotal);
   let cbsRate, ibsRate;
   if(year === 2026){
@@ -1006,7 +1046,7 @@ function computeForYear(year, valor, catMult, refTotal){
     cbsRate = phase.cbsRate * catMult;
     ibsRate = phase.ibsRate * catMult;
   }
-  const legacy = legacyData(year);
+  const legacy = legacyData(year, icmsFull);
   const icmsRate = legacy.icmsRate * catMult;
   const pisCofinsRate = legacy.pisCofinsRate * catMult;
 
@@ -1026,8 +1066,10 @@ function calc(){
   const valor = parseFloat(document.getElementById('valor').value) || 0;
   const catMult = parseFloat(document.getElementById('categoria').value);
   const refTotal = parseFloat(refInput.value);
+  const estado = document.getElementById('estado').value;
+  const icmsFull = ICMS_RATES[estado];
 
-  const r = computeForYear(selectedYear, valor, catMult, refTotal);
+  const r = computeForYear(selectedYear, valor, catMult, refTotal, icmsFull);
 
   document.getElementById('phaseBadge').innerHTML = '<span class="dot"></span>' + r.phase.label;
   document.getElementById('valTotalBig').textContent = fmt(r.total);
@@ -1050,6 +1092,8 @@ function calc(){
   document.getElementById('valPisCofins').innerHTML = fmt(r.pisCofinsVal) + ' <span class="rate">' + pct(r.pisCofinsRate) + '</span>';
   document.getElementById('pisCofinsRow').style.display = r.pisCofinsRate > 0 ? '' : 'none';
   document.getElementById('icmsRow').style.display = r.icmsRate > 0 ? '' : 'none';
+  const estadoNome = document.getElementById('estado').selectedOptions[0].textContent.split(' — ')[0];
+  document.getElementById('legacyNote').textContent = 'ICMS considerado na alíquota interna geral de ' + estadoNome + ' (' + pct(icmsFull) + '), só para exemplo didático — alíquotas específicas por produto ou benefício fiscal podem variar.';
 
   const explainEl = document.getElementById('phaseExplain');
   explainEl.textContent = phaseExplainText[selectedYear];
@@ -1066,11 +1110,12 @@ function renderScenarios(){
   const valor = parseFloat(document.getElementById('valor').value) || 0;
   const catMult = parseFloat(document.getElementById('categoria').value);
   const refTotal = parseFloat(refInput.value);
+  const icmsFull = ICMS_RATES[document.getElementById('estado').value];
   const body = document.getElementById('scenarioBody');
   body.innerHTML = '';
   let prevEfetiva = null;
   years.forEach(y=>{
-    const r = computeForYear(y, valor, catMult, refTotal);
+    const r = computeForYear(y, valor, catMult, refTotal, icmsFull);
     const tr = document.createElement('tr');
     if(y === selectedYear) tr.className = 'now';
     let trend = '';
