@@ -669,11 +669,11 @@ input[type="range"]{
         <div>
           <div class="result-dark">
             <span class="badge-phase" id="phaseBadge"><span class="dot"></span>2026, fase de teste</span>
-            <div class="headline">Total de IBS + CBS</div>
+            <div class="headline">Carga tributária total estimada</div>
             <div class="big-number mono" id="valTotalBig">R$ 0,00</div>
 
             <div id="simplesNote" class="note warn" style="display:none; background:rgba(207,32,47,0.12); border-color:rgba(207,32,47,0.25); color:#ffd6cf;">
-              Pelo Simples Nacional, IBS e CBS ficam embutidos no DAS, sem destaque separado, salvo se a empresa optar por recolher por fora do regime para aproveitar crédito cheio. Os valores abaixo simulam o cálculo fora do Simples, para referência.
+              Pelo Simples Nacional, IBS, CBS, ICMS e PIS/COFINS ficam todos embutidos no DAS, sem destaque separado, salvo se a empresa optar por recolher por fora do regime para aproveitar crédito cheio. Os valores abaixo simulam o cálculo fora do Simples, para referência.
             </div>
 
             <div class="ledger-row">
@@ -696,16 +696,30 @@ input[type="range"]{
               <span class="label">Valor da operação</span>
               <span class="value mono" id="valBase">R$ 0,00</span>
             </div>
-            <div class="ledger-row" id="valTotal2Row" style="display:none;">
-              <span class="label">IBS + CBS destacados</span>
+            <div class="ledger-row" id="valTotal2Row">
+              <span class="label">Total geral de tributos</span>
               <span class="value mono" id="valTotal2">R$ 0,00</span>
             </div>
             <div class="ledger-row total">
-              <span class="label">Alíquota efetiva</span>
+              <span class="label">Alíquota efetiva total</span>
               <span class="value mono" id="valAliquota">0,0%</span>
             </div>
 
             <div class="note note-on-dark" id="phaseExplain"></div>
+
+            <div class="result-divider" id="legacyDivider"></div>
+            <div class="ledger-row" id="legacyLabelRow">
+              <span class="label" style="color:var(--on-dark-soft); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Sistema atual, em extinção</span>
+            </div>
+            <div class="ledger-row" id="icmsRow">
+              <span class="label"><span class="swatch" style="background:#f0a828;"></span>ICMS, estadual</span>
+              <span class="value" id="valIcms">R$ 0,00 <span class="rate" id="rateIcms">0,0%</span></span>
+            </div>
+            <div class="ledger-row" id="pisCofinsRow">
+              <span class="label"><span class="swatch" style="background:#ff6b57;"></span>PIS + COFINS, federal</span>
+              <span class="value" id="valPisCofins">R$ 0,00 <span class="rate" id="ratePisCofins">0,0%</span></span>
+            </div>
+            <div class="note note-on-dark" id="legacyNote" style="font-size:11.5px;">ICMS considerado na alíquota padrão de 18% (referência SP/MG/AP), só para exemplo didático — cada estado define a própria alíquota (hoje entre 17% e 22%).</div>
           </div>
         </div>
       </div>
@@ -729,6 +743,8 @@ input[type="range"]{
                 <th>Ano</th>
                 <th>CBS</th>
                 <th>IBS</th>
+                <th>ICMS</th>
+                <th>PIS+COFINS</th>
                 <th>Total</th>
                 <th>Alíq. efetiva</th>
               </tr>
@@ -742,7 +758,7 @@ input[type="range"]{
       <div class="panel">
         <p class="panel-title">Leitura rápida</p>
         <div class="tl">
-          <div class="tl-item"><div class="yr">2026 → 2028</div><p>A conta nova é simbólica. PIS e Cofins somem em 2027, mas o ICMS e o ISS seguem cobrando a maior parte fora desta simulação.</p></div>
+          <div class="tl-item"><div class="yr">2026 → 2028</div><p>A conta nova é simbólica. PIS e Cofins somem em 2027 (já entram na simulação). O ICMS segue cobrando a maior parte, também já calculado aqui; o ISS fica de fora por variar por município.</p></div>
           <div class="tl-item"><div class="yr">2029 → 2032</div><p>O IBS sobe em rampa, ano a ano, enquanto ICMS e ISS perdem espaço na mesma proporção.</p></div>
           <div class="tl-item"><div class="yr">2033</div><p>Sistema pleno. Só restam IBS e CBS, na alíquota de referência fixada pelo Senado.</p></div>
         </div>
@@ -837,7 +853,7 @@ input[type="range"]{
       </div>
 
       <div class="footer-note">
-        Simulação educativa baseada na Emenda Constitucional 132/2023, na Lei Complementar 214/2025 e nas alíquotas de teste e de transição divulgadas pela Secretaria Extraordinária da Reforma Tributária. As alíquotas de 2029 a 2033 ainda dependem de fixação pelo Senado Federal e podem mudar.
+        Simulação educativa baseada na Emenda Constitucional 132/2023, na Lei Complementar 214/2025 e nas alíquotas de teste e de transição divulgadas pela Secretaria Extraordinária da Reforma Tributária. ICMS considerado a 18% (alíquota padrão de SP/MG/AP, só como referência didática — cada estado fixa a própria alíquota, hoje entre 17% e 22%). PIS (1,65%) e Cofins (7,6%) consideradas pelo regime não cumulativo e extintas a partir de 2027, quando são substituídas pela CBS. As alíquotas de 2029 a 2033 ainda dependem de fixação pelo Senado Federal e podem mudar.
       </div>
     </div>
 
@@ -925,6 +941,27 @@ document.getElementById('simples').addEventListener('change', ()=>{
   calc();
 });
 
+/* Tributos do sistema atual, ainda em vigor durante a transição (LC 214/2025).
+   PIS e Cofins são extintos a partir de 2027, substituídos pela CBS cheia.
+   ICMS segue integral até 2028 e entra na mesma rampa de queda do IBS entre 2029 e 2032. */
+const ICMS_FULL = 18;
+const PIS_FULL = 1.65;
+const COFINS_FULL = 7.6;
+
+function legacyData(year){
+  let icmsRate;
+  if(year <= 2028){
+    icmsRate = ICMS_FULL;
+  } else if(year <= 2032){
+    const progress = (year - 2028) / 5;
+    icmsRate = ICMS_FULL * (1 - progress);
+  } else {
+    icmsRate = 0;
+  }
+  const pisCofinsRate = (year === 2026) ? (PIS_FULL + COFINS_FULL) : 0;
+  return { icmsRate, pisCofinsRate };
+}
+
 function phaseData(year, refTotal){
   const cbsShare = 0.332;
   const ibsShare = 0.668;
@@ -949,7 +986,7 @@ function phaseData(year, refTotal){
 }
 
 const phaseExplainText = {
-  2026: 'A CBS de 0,9% e o IBS de 0,1% aparecem destacados na nota, mas são compensados com PIS, Cofins ou outros tributos federais devidos. Quem cumpre a obrigação acessória não paga a mais neste ano.',
+  2026: 'A CBS de 0,9% e o IBS de 0,1% aparecem destacados na nota, mas são compensados com PIS, Cofins ou outros tributos federais devidos. Quem cumpre a obrigação acessória não paga a mais neste ano. ICMS, PIS e Cofins continuam sendo cobrados normalmente, nas alíquotas de sempre — por isso aparecem à parte, na seção "Sistema atual" abaixo.',
   2027: 'PIS e Cofins saem de cena e a CBS passa a valer quase cheia. O ICMS e o ISS ainda respondem pela maior parte da conta, porque o IBS segue simbólico.',
   2028: 'Mesmo desenho de 2027. A CBS segue próxima da alíquota final e o IBS ainda opera em escala reduzida, enquanto ICMS e ISS continuam ativos nos estados e municípios.',
   2029: 'Começa a rampa do IBS. A cada ano, ICMS e ISS perdem espaço e o IBS ocupa a fatia que eles deixam.',
@@ -969,11 +1006,20 @@ function computeForYear(year, valor, catMult, refTotal){
     cbsRate = phase.cbsRate * catMult;
     ibsRate = phase.ibsRate * catMult;
   }
+  const legacy = legacyData(year);
+  const icmsRate = legacy.icmsRate * catMult;
+  const pisCofinsRate = legacy.pisCofinsRate * catMult;
+
   const cbsVal = valor * cbsRate / 100;
   const ibsVal = valor * ibsRate / 100;
-  const total = cbsVal + ibsVal;
+  const icmsVal = valor * icmsRate / 100;
+  const pisCofinsVal = valor * pisCofinsRate / 100;
+
+  const novoTotal = cbsVal + ibsVal;
+  const legacyTotal = icmsVal + pisCofinsVal;
+  const total = novoTotal + legacyTotal;
   const efetiva = valor > 0 ? (total/valor)*100 : 0;
-  return {phase, cbsRate, ibsRate, cbsVal, ibsVal, total, efetiva};
+  return {phase, cbsRate, ibsRate, icmsRate, pisCofinsRate, cbsVal, ibsVal, icmsVal, pisCofinsVal, novoTotal, legacyTotal, total, efetiva};
 }
 
 function calc(){
@@ -991,10 +1037,19 @@ function calc(){
   document.getElementById('valBase').textContent = fmt(valor);
   document.getElementById('valAliquota').textContent = pct(r.efetiva);
 
-  const cbsShareOfTotal = r.total > 0 ? (r.cbsVal/r.total)*100 : 50;
-  const ibsShareOfTotal = r.total > 0 ? (r.ibsVal/r.total)*100 : 50;
+  const cbsShareOfTotal = r.novoTotal > 0 ? (r.cbsVal/r.novoTotal)*100 : 50;
+  const ibsShareOfTotal = r.novoTotal > 0 ? (r.ibsVal/r.novoTotal)*100 : 50;
   document.getElementById('barCbs').style.width = cbsShareOfTotal + '%';
   document.getElementById('barIbs').style.width = ibsShareOfTotal + '%';
+
+  const hasLegacy = r.legacyTotal > 0 || r.icmsRate > 0;
+  ['legacyDivider','legacyLabelRow','icmsRow','pisCofinsRow','legacyNote'].forEach(id=>{
+    document.getElementById(id).style.display = hasLegacy ? '' : 'none';
+  });
+  document.getElementById('valIcms').innerHTML = fmt(r.icmsVal) + ' <span class="rate">' + pct(r.icmsRate) + '</span>';
+  document.getElementById('valPisCofins').innerHTML = fmt(r.pisCofinsVal) + ' <span class="rate">' + pct(r.pisCofinsRate) + '</span>';
+  document.getElementById('pisCofinsRow').style.display = r.pisCofinsRate > 0 ? '' : 'none';
+  document.getElementById('icmsRow').style.display = r.icmsRate > 0 ? '' : 'none';
 
   const explainEl = document.getElementById('phaseExplain');
   explainEl.textContent = phaseExplainText[selectedYear];
@@ -1026,6 +1081,8 @@ function renderScenarios(){
     tr.innerHTML = '<td>' + y + '</td>' +
       '<td>' + pct(r.cbsRate) + '</td>' +
       '<td>' + pct(r.ibsRate) + '</td>' +
+      '<td>' + pct(r.icmsRate) + '</td>' +
+      '<td>' + pct(r.pisCofinsRate) + '</td>' +
       '<td>' + fmt(r.total) + '</td>' +
       '<td>' + pct(r.efetiva) + trend + '</td>';
     body.appendChild(tr);
